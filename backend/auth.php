@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
-        header('Location: ../views/dashboard.php');
+        header('Location: ../frontend/dashboard.php');
         exit;
     } else {
         echo "Invalid username or password.";
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try {
         $stmt->execute(['username' => $username, 'email' => $email, 'password' => $password]);
-        header('Location: ../views/login.php');
+        header('Location: ../frontend/login.php');
         exit;
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
