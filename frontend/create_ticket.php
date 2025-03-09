@@ -1,9 +1,17 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once '../backend/db.php';
+require_once '../security/security.php';
+require_once '../security/auth.php';
+
+// Require authentication
+$user = requireAuth();
+
+// Set security headers
+Security::setSecurityHeaders();
+
+// Generate CSRF token
+$csrf_token = Security::generateCSRFToken();
 ?>
 
 <!DOCTYPE html>
@@ -18,11 +26,14 @@ if (!isset($_SESSION['user_id'])) {
   <h1>Create a New Ticket</h1>
 
   <form action="../backend/ticket.php" method="POST">
+      <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+      <input type="hidden" name="action" value="create">
+      
       <label for="title">Title:</label><br />
-      <input type="text" id="title" name="title" required><br /><br />
+      <input type="text" id="title" name="title" required maxlength="100"><br /><br />
 
       <label for="description">Description:</label><br />
-      <textarea id="description" name="description" rows="5" required></textarea><br /><br />
+      <textarea id="description" name="description" rows="5" required maxlength="1000"></textarea><br /><br />
 
       <label for="priority">Priority:</label><br />
       <select id="priority" name="priority">
@@ -30,12 +41,12 @@ if (!isset($_SESSION['user_id'])) {
           <option value="medium">Medium</option>
           <option value="high">High</option>
       </select><br /><br />
-
+      
       <label for="visibility">Visibility:</label><br />
-    <select id="visibility" name="visibility">
-        <option value="private">Private</option>
-        <option value="public">Public</option>
-    </select><br /><br />
+      <select id="visibility" name="visibility">
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+      </select><br /><br />
 
       <button type="submit">Create Ticket</button><br /><br />
   </form>

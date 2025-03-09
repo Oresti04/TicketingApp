@@ -15,7 +15,6 @@ $user_id = $_SESSION['user_id'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="assets/css/style.css">
   <title>Waiting Room</title>
   <style>
     .container {
@@ -167,7 +166,7 @@ $user_id = $_SESSION['user_id'];
     
     // Function to fetch messages
     function fetchMessages() {
-      fetch('backend/chat.php?action=getMessages&last_id=' + lastMessageId)
+      fetch('../backend/chat.php?action=getMessages&last_id=' + lastMessageId)
         .then(response => response.json())
         .then(data => {
           if (data.messages && data.messages.length > 0) {
@@ -185,7 +184,7 @@ $user_id = $_SESSION['user_id'];
     
     // Function to fetch online users
     function fetchOnlineUsers() {
-      fetch('backend/chat.php?action=getOnlineUsers')
+      fetch('../backend/chat.php?action=getOnlineUsers')
         .then(response => response.json())
         .then(data => {
           if (data.users) {
@@ -228,7 +227,7 @@ $user_id = $_SESSION['user_id'];
     function sendMessage() {
       const message = messageInput.value.trim();
       if (message) {
-        fetch('backend/chat.php', {
+        fetch('../backend/chat.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -245,7 +244,7 @@ $user_id = $_SESSION['user_id'];
         .catch(error => console.error('Error sending message:', error));
       }
     }
-    
+
     // Event listeners
     sendButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', function(e) {
@@ -256,7 +255,7 @@ $user_id = $_SESSION['user_id'];
     
     // Update user's online status
     function updateOnlineStatus() {
-      fetch('backend/chat.php?action=updateStatus')
+      fetch('../backend/chat.php?action=updateStatus')
         .catch(error => console.error('Error updating status:', error));
     }
     
