@@ -1,16 +1,20 @@
 <?php
 session_start();
 require_once '../backend/db.php';
+require_once '../security/security.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
+// Generate CSRF token
+$csrf_token = Security::generateCSRFToken();
+
 $user_id = $_SESSION['user_id'];
 
 // Fetch tickets being handled by this user
-$stmt = $pdo->prepare("SELECT t.*, u.username AS creator_username
+$stmt = $pdo->prepare("SELECT t.*, u.username AS creator_username 
                       FROM tickets t 
                       JOIN users u ON t.created_by = u.id
                       WHERE t.currently_handled_by = :user_id
@@ -88,6 +92,7 @@ $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <td><?= htmlspecialchars($ticket['created_at']) ?></td>
                   <td>
                       <form action="../backend/ticket.php" method="POST">
+                          <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                           <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
                           
                           <button type="submit" name="action" value="release">
