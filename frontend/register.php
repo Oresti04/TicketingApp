@@ -7,13 +7,13 @@ require_once '../security/security.php';
 Security::setSecurityHeaders();
 
 // Generate CSRF token
-$csrf_token = Security::regenerateCSRFToken();
+$csrf_token = Security::generateCSRFToken();
 
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate CSRF token
-    if (false/*!Security::validateCSRFToken($_POST['csrf_token'] ?? '')*/) {
+    if (!Security::validateCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = "Security validation failed. Please try again.";
     } else {
         $username = Security::sanitizeInput($_POST['username']);
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/style.css">
     <title>Register</title>
-    <style>
+    <style nonce="<?= $_SESSION['csp_nonce'] ?>">
         .password-meter {
             width: 100%;
             height: 10px;
@@ -104,26 +104,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="register.php" method="POST">
         <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
         
-        <label for="username">Username:</label>
+        <label for="username">Username:</label><br />
         <input type="text" id="username" name="username" required pattern="[A-Za-z0-9_]{3,20}" 
-               title="3-20 characters, alphanumeric and underscore only">
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+               title="3-20 characters, alphanumeric and underscore only"><br /><br />
+
+        <label for="email">Email:</label><br />
+        <input type="email" id="email" name="email" required><br /><br />
+
+        <label for="password">Password:</label><br />
+        <input type="password" id="password" name="password" required><br />
         <div class="password-meter">
             <div id="password-strength" class="password-meter-fill"></div>
         </div>
-        <small>Must be at least 8 characters with uppercase, lowercase, numbers, and special characters</small>
+        <small>Must be at least 8 characters with uppercase, lowercase, numbers, and special characters</small><br /><br />
         
         <button type="submit">Register</button>
     </form>
     
     <p>Already have an account? <a href="login.php">Login here</a>.</p>
     
-    <script>
+    <script nonce="<?= $_SESSION['csp_nonce'] ?>">
         // Client-side password strength meter
         document.getElementById('password').addEventListener('input', function() {
             const password = this.value;

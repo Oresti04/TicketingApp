@@ -1,11 +1,15 @@
 <?php
 session_start();
 require_once '../backend/db.php';
+require_once '../security/security.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
+
+// Generate CSRF token
+$csrf_token = Security::generateCSRFToken();
 
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
@@ -123,6 +127,7 @@ $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   </td>
                   <td>
                       <form action="../backend/ticket.php" method="POST">
+                          <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                           <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
                           
                           <?php if ($ticket['created_by'] == $_SESSION['user_id']): ?>
@@ -147,6 +152,10 @@ $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
                           <?php else: ?>
                               <!-- Someone else is handling this ticket -->
                               <span class="being-handled">In progress</span>
+                          <?php endif; ?>
+                          
+                          <?php if ($role === 'admin' && $ticket['status'] !== 'resolved'): ?>
+                              <button type="submit" name="action" value="admin_resolve">Admin Resolve</button>
                           <?php endif; ?>
                       </form>
                   </td>

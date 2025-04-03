@@ -7,8 +7,10 @@ require_once '../security/auth.php';
 // Require authentication
 $user = requireAuth();
 
-// Set security headers
-Security::setSecurityHeaders();
+if (!isset($_SESSION['user_id'])) {
+  header('Location: login.php');
+  exit;
+}
 
 // Generate CSRF token
 $csrf_token = Security::generateCSRFToken();

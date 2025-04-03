@@ -4,18 +4,34 @@ require_once 'db.php';
 require_once '../security/auth.php';
 require_once '../security/security.php';
 
-
-
-   // Require authentication
+// Require authentication
 $user = requireAuth();
 $user_id = $user['user_id'];
 $role = $user['role'];
 
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     // Validate CSRF token for web requests
+//     if (!isAPIRequest() && !Security::validateCSRFToken($_POST['csrf_token'] ?? '')) {
+//         echo "CSRF validation failed. Please try again.";
+//         exit;
+//     }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate CSRF token for web requests
-    if (!isAPIRequest() && !Security::validateCSRFToken($_POST['csrf_token'] ?? '')) {
-        echo "CSRF validation failed. Please try again.";
-        exit;
+    // Skip CSRF check for API requests if you have those
+    if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'] !== 'XMLHttpRequest') {
+        // Proper CSRF validation with helpful error message
+        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+            $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            // Log the error for debugging
+            error_log('CSRF validation failed. Session token: ' . 
+                     (isset($_SESSION['csrf_token']) ? substr($_SESSION['csrf_token'], 0, 8) . '...' : 'missing') . 
+                     ', POST token: ' . 
+                     (isset($_POST['csrf_token']) ? substr($_POST['csrf_token'], 0, 8) . '...' : 'missing'));
+            
+            // Redirect with error message instead of just dying
+            header('Location: ../frontend/dashboard.php?error=csrf_error');
+            exit;
+        }
     }
     
     // Handle ticket creation

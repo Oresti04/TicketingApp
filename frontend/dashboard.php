@@ -1,9 +1,15 @@
 <?php
 session_start();
+require_once '../security/security.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
+
+// Get CSRF token
+$csrf_token = Security::generateCSRFToken();
+
 $role = $_SESSION['role'];
 ?>
 
@@ -103,6 +109,12 @@ $role = $_SESSION['role'];
 <body>
   <h1>Welcome to the Ticketing App!</h1>
 
+  <?php if (isset($_GET['error']) && $_GET['error'] === 'csrf_error'): ?>
+    <div class="error-message">
+        Security validation failed. Please try again.
+    </div>
+  <?php endif; ?>
+
   <div class="card-container">
       <div class="card">
           <h2>Tickets</h2>
@@ -125,6 +137,9 @@ $role = $_SESSION['role'];
       </div>
   </div>
 
-  <a href="../backend/logout.php" class="logout-btn">Logout</a>
+  <form action="../backend/logout.php" method="POST">
+    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+    <button type="submit" class="logout-btn">Logout</button>
+  </form>
 </body>
 </html>

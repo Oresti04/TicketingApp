@@ -3,7 +3,7 @@
  * Simple JWT implementation using only vanilla PHP
  */
 class JWT {
-    private static $secret = 'your_secure_random_key_change_this_in_production';
+    private static $secret = 'kjasdhf987qwer!@#$asdfASDF123';
     
     /**
      * Generate a JWT token

@@ -53,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Regenerate session ID to prevent session fixation
                 session_regenerate_id(true);
                 
+                // Regenerate CSRF token after login
+                Security::regenerateCSRFToken();
+                
                 header('Location: waiting_room.php');
                 exit;
             } else {
