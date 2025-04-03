@@ -7,14 +7,98 @@ if (!isset($_SESSION['user_id'])) {
 $role = $_SESSION['role'];
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/style.css">
   <title>Dashboard</title>
+  <style>
+    :root {
+      --primary-green: #2e7d32;
+      --light-green: #4caf50;
+      --dark-green: #1b5e20;
+      --white: #ffffff;
+      --light-gray: #f5f5f5;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--white);
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: var(--primary-green);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto 30px;
+    }
+    
+    .card {
+      background-color: var(--light-gray);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card h2 {
+      color: var(--primary-green);
+      border-bottom: 2px solid var(--light-green);
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+    
+    .card a {
+      display: block;
+      background-color: var(--primary-green);
+      color: var(--white);
+      text-decoration: none;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 5px;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    
+    .card a:hover {
+      background-color: var(--dark-green);
+    }
+    
+    .logout-btn {
+      display: block;
+      width: 150px;
+      margin: 30px auto 0;
+      padding: 10px;
+      background-color: transparent;
+      color: var(--primary-green);
+      border: 2px solid var(--primary-green);
+      border-radius: 5px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background-color: var(--primary-green);
+      color: var(--white);
+    }
+  </style>
 </head>
 <body>
   <h1>Welcome to the Ticketing App!</h1>
@@ -41,6 +125,6 @@ $role = $_SESSION['role'];
       </div>
   </div>
 
-  <a href="../backend/logout.php">Logout</a>
+  <a href="../backend/logout.php" class="logout-btn">Logout</a>
 </body>
 </html>
