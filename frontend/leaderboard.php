@@ -19,6 +19,9 @@ $start = max($userRank - 10, 0);
 $end = min($start + 20, $totalUsers);
 $userSubset = array_slice($allUsers, $start, $end - $start);
 
+//Var for generating bar graph lengths
+$maxSubsetPoints = max(array_column($userSubset, 'points'));
+
 // Top Ten Users
 $topTenUsers = array_slice($allUsers, 0, 10);
 
@@ -56,80 +59,92 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
-    h1 {
-      color: #2e7d32;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    .tabs button {
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border: none;
-      background: #ccc;
-      border-radius: 4px 4px 0 0;
-      margin-right: 2px;
-    }
-    .tabs button.active {
-      background: #0077cc;
-      color: white;
-    }
-    .leaderboard-container {
-      max-width: 700px;
-      margin: auto;
-    }
-    .leaderboard-bar {
-      display: flex; 
-      align-items: center;
-      margin: 0.5rem 0;
-    }
-    .username {
-      width: 120px;
-      font-weight: bold;
-    }
-    .bar {
-      flex-grow: 1;
-      height: 20px;
-      background-color: #0077cc;
-      border-radius: 4px;
-      position: relative;
-    }
-    .bar.user-highlight {
-      background-color: #00cc77;
-    }
-    .points {
-      position: absolute;
-      right: 10px;
-      color: white;
-      font-weight: bold;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    
-    .back-link {
-      display: block;
-      width: 200px;
-      margin: 30px auto 0;
-      padding: 10px;
-      background-color: transparent;
-      color: #2e7d32;
-      border: 2px solid #2e7d32;
-      border-radius: 5px;
-      text-align: center;
-      text-decoration: none;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-    
-    .back-link:hover {
-      background-color: #2e7d32;
-      color: white;
-    }
+h1 {
+  color: #2e7d32;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.tabs button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: none;
+  background: #ccc;
+  border-radius: 4px 4px 0 0;
+  margin-right: 2px;
+}
+
+.tabs button.active {
+  background: #0077cc;
+  color: white;
+}
+
+.leaderboard-container {
+  max-width: 700px;
+  margin: auto;
+}
+
+.leaderboard-bar {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.username {
+  width: 120px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.bar {
+  position: relative;
+  height: 20px;
+  background-color: #0077cc;
+  border-radius: 4px;
+  min-width: 40px; /* ensures bar is always wide enough to contain points */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* points on right */
+  padding-right: 10px; /* padding for points */
+  box-sizing: border-box;
+}
+
+.bar.user-highlight {
+  background-color: #00cc77;
+}
+
+.points {
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.back-link {
+  display: block;
+  width: 200px;
+  margin: 30px auto 0;
+  padding: 10px;
+  background-color: transparent;
+  color: #2e7d32;
+  border: 2px solid #2e7d32;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.back-link:hover {
+  background-color: #2e7d32;
+  color: white;
+}
+
   </style>
   <title>Leaderboard</title>
 </head>
@@ -144,47 +159,68 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
     <button onclick="showTab(event, 'global')">Global</button>
   </div>
 
-  <!-- My Stats -->
-  <div id="mystats" class="tab-content">
-    <?php foreach ($userSubset as $user): ?>
-      <div class="leaderboard-bar">
-        <div class="username"><?= htmlspecialchars($user['username']) ?></div>
-        <div class="bar<?= $user['username'] === $currentUser ? ' user-highlight' : '' ?>" style="width: <?= ($user['points'] / $allUsers[0]['points'])*100 ?>%;">
-          <div class="points"><?= htmlspecialchars($user['points']) ?></div>
-        </div>
+<!-- My Stats -->
+<div id="mystats" class="tab-content">
+  <?php foreach ($userSubset as $user): 
+    $barWidth = $maxSubsetPoints ? (($user['points'] / $maxSubsetPoints) * 100) : 0;
+  ?>
+    <div class="leaderboard-bar">
+      <div class="username"><?= htmlspecialchars($user['username']) ?></div>
+      <div class="bar<?= $user['username'] === $currentUser ? ' user-highlight' : '' ?>" style="width: <?= $barWidth ?>%;">
+        <span class="points"><?= htmlspecialchars($user['points']) ?></span>
       </div>
-    <?php endforeach; ?>
-  </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
 
   <!-- Top Ten -->
   <div id="topten" class="tab-content" style="display:none;">
-    <?php foreach ($topTenUsers as $user): ?>
-      <div class="leaderboard-bar">
-        <div class="username"><?= htmlspecialchars($user['username']) ?></div>
-        <div class="bar" style="width: <?= ($user['points'] / $allUsers[0]['points'])*100 ?>%;">
-          <div class="points"><?= htmlspecialchars($user['points']) ?></div>
-        </div>
+  <?php foreach ($topTenUsers as $user): 
+    $barWidth = ($user['points'] / $topTenUsers[0]['points']) * 100;
+  ?>
+    <div class="leaderboard-bar">
+      <div class="username"><?= htmlspecialchars($user['username']) ?></div>
+      <div class="bar" style="width: <?= $barWidth ?>%;">
+        <span class="points"><?= htmlspecialchars($user['points']) ?></span>
       </div>
-    <?php endforeach; ?>
-  </div>
+    </div>
+  <?php endforeach; ?>
+</div>
 
-  <!-- Global Percentiles -->
-  <div id="global" class="tab-content" style="display:none;">
-    <?php foreach ($percentiles as $idx => $percentile): ?>
-      <?php 
-        $barWidth = pow(($percentile['average_points'] / $maxAvgPoints), 2) * 100;
-        $highlight = ((int)$idx === (int)$userPercentileIndex);
-      ?>
-      <div class="leaderboard-bar">
-        <div class="username"><?= ($idx*10) ?>-<?= (($idx+1)*10) ?>%</div>
-        <div class="bar<?= $highlight ? ' user-highlight' : '' ?>" style="width: <?= $barWidth ?>%;">
-          <div class="points">
-            <?= $highlight ? htmlspecialchars($currentUser) : $percentile['average_points'] . ' pts (avg)' ?>
-          </div>
-        </div>
+
+
+<!-- Global Percentiles -->
+<div id="global" class="tab-content" style="display:none;">
+  <?php
+    $minAvgPoints = min(array_column($percentiles, 'average_points'));
+    $maxAvgPoints = max(array_column($percentiles, 'average_points'));
+    function logScale($val, $min, $max, $minWidth = 3, $maxWidth = 99) {
+      if ($val <= $min) return $minWidth;
+      if ($val >= $max) return $maxWidth;
+      $logMin = log($min + 1);
+      $logMax = log($max + 1);
+      $logVal = log($val + 1);
+      return $minWidth + (($logVal - $logMin) / ($logMax - $logMin)) * ($maxWidth - $minWidth);
+    }
+
+    foreach ($percentiles as $idx => $percentile):
+      $barWidth = logScale($percentile['average_points'], $minAvgPoints, $maxAvgPoints);
+      $highlight = ((int)$idx === (int)$userPercentileIndex);
+  ?>
+    <div class="leaderboard-bar">
+      <div class="username"><?= ($idx*10) ?>-<?= (($idx+1)*10) ?>%</div>
+      <div class="bar<?= $highlight ? ' user-highlight' : '' ?>" style="width: <?= round($barWidth, 2) ?>%;">
+        <span class="points">
+          <?= $highlight ? htmlspecialchars($currentUser) : $percentile['average_points'] . ' pts (avg)' ?>
+        </span>
       </div>
-    <?php endforeach; ?>
-  </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
+
+
 
   <a href="dashboard.php" class="back-link">Back to Dashboard</a>
 </div>
