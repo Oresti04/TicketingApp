@@ -56,6 +56,12 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
+    h1 {
+      color: #2e7d32;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
     .tabs {
       display: flex;
       justify-content: center;
@@ -73,23 +79,70 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
       background: #0077cc;
       color: white;
     }
-    .leaderboard-container {max-width: 700px;margin: auto;}
-    .leaderboard-bar {display: flex; align-items: center;margin: 0.5rem 0;}
-    .username {width: 120px;font-weight: bold;}
-    .bar {flex-grow: 1;height: 20px;background-color: #0077cc;border-radius: 4px;position: relative;}
-    .bar.user-highlight {background-color: #00cc77;}
-    .points {position: absolute;right: 10px;color: white;font-weight: bold;top: 50%;transform: translateY(-50%);}
+    .leaderboard-container {
+      max-width: 700px;
+      margin: auto;
+    }
+    .leaderboard-bar {
+      display: flex; 
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    .username {
+      width: 120px;
+      font-weight: bold;
+    }
+    .bar {
+      flex-grow: 1;
+      height: 20px;
+      background-color: #0077cc;
+      border-radius: 4px;
+      position: relative;
+    }
+    .bar.user-highlight {
+      background-color: #00cc77;
+    }
+    .points {
+      position: absolute;
+      right: 10px;
+      color: white;
+      font-weight: bold;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .back-link {
+      display: block;
+      width: 200px;
+      margin: 30px auto 0;
+      padding: 10px;
+      background-color: transparent;
+      color: #2e7d32;
+      border: 2px solid #2e7d32;
+      border-radius: 5px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .back-link:hover {
+      background-color: #2e7d32;
+      color: white;
+    }
   </style>
   <title>Leaderboard</title>
 </head>
 <body>
 
 <div class="leaderboard-container">
-    <div class="tabs">
-        <button class="active" onclick="showTab(event, 'mystats')">My Stats</button>
-        <button onclick="showTab(event, 'topten')">Top Ten</button>
-        <button onclick="showTab(event, 'global')">Global</button>
-    </div>
+  <h1>Leaderboard</h1>
+  
+  <div class="tabs">
+    <button class="active" onclick="showTab(event, 'mystats')">My Stats</button>
+    <button onclick="showTab(event, 'topten')">Top Ten</button>
+    <button onclick="showTab(event, 'global')">Global</button>
+  </div>
 
   <!-- My Stats -->
   <div id="mystats" class="tab-content">
@@ -116,8 +169,7 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
   </div>
 
   <!-- Global Percentiles -->
-    <!-- Global Percentiles -->
-    <div id="global" class="tab-content" style="display:none;">
+  <div id="global" class="tab-content" style="display:none;">
     <?php foreach ($percentiles as $idx => $percentile): ?>
       <?php 
         $barWidth = pow(($percentile['average_points'] / $maxAvgPoints), 2) * 100;
@@ -134,7 +186,7 @@ $maxAvgPoints = max(array_column($percentiles, 'average_points'));
     <?php endforeach; ?>
   </div>
 
-  <a href="dashboard.php">Back to Dashboard</a>
+  <a href="dashboard.php" class="back-link">Back to Dashboard</a>
 </div>
 
 <script>
