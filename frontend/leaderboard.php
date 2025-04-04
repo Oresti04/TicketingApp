@@ -86,7 +86,7 @@ h1 {
 }
 
 .leaderboard-container {
-  max-width: 700px;
+  max-width: 85vw;
   margin: auto;
 }
 
